@@ -34,7 +34,7 @@ public class User {
     @JoinColumn(name = "manager_id")
     private User manager;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 255)
     private String department;
 
     @OneToMany(mappedBy = "requestor", cascade = CascadeType.ALL)

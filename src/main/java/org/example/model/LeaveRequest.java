@@ -6,7 +6,6 @@ import lombok.*;
 import org.example.Enum.LeaveType;
 import org.example.Enum.Status;
 
-import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -47,7 +46,7 @@ public class LeaveRequest {
     private Status status;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "leave_type",nullable = false)
+    @Column(name = "leave_type", nullable = false)
     private LeaveType leaveType;
 
     @Column(name = "created_at")

@@ -1,62 +1,90 @@
 package org.example.service;
 
+import lombok.RequiredArgsConstructor;
 import org.example.model.LeaveRequest;
-import org.example.model.LeaveRequestResponse;
 import org.example.model.User;
+import org.example.model.LeaveBalance;
 import org.example.repository.LeaveRequestRepository;
+import org.example.repository.LeaveBalanceRepository;
 import org.example.repository.UserRepository;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.example.Enum.Status;
 import org.example.Enum.LeaveType;
+import org.example.dto.response.LeaveRequestResponse;
+import org.example.dto.request.LeaveRequestRequest;
+import org.springframework.data.domain.*;
+
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class LeaveRequestService {
-    private final SimpMessagingTemplate messagingTemplate;
-    private final LeaveRequestRepository leaveRequestRepository;
-    private final UserRepository userRepository;
 
-    public LeaveRequestService(LeaveRequestRepository leaveRequestRepository, UserRepository userRepository, SimpMessagingTemplate messagingTemplate) {
-        this.leaveRequestRepository = leaveRequestRepository;
-        this.userRepository = userRepository;
-        this.messagingTemplate = messagingTemplate;
-    }
+        private final SimpMessagingTemplate messagingTemplate;
+        private final LeaveRequestRepository leaveRequestRepository;
+        private final LeaveBalanceRepository leaveBalanceRepository;
+        private final UserRepository userRepository;
 
-    public LeaveRequest createLeaveRequest(Long requestorId, LeaveRequest request) {
-        Optional<User> userOpt = userRepository.findById(requestorId);
-        if (userOpt.isEmpty()) {
-            throw new IllegalArgumentException("User not found");
+        public LeaveRequest createLeaveRequest(Long requestorId, LeaveRequestRequest requestDto) {
+
+                User requestor = userRepository.findById(requestorId)
+                                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+                LeaveBalance leaveBalance = leaveBalanceRepository.findByUser_Id(requestorId)
+                                .orElseThrow(() -> new IllegalArgumentException("Leave balance not found for user"));
+
+                int totalDays = (int) (requestDto.getEndDate().toEpochDay() - requestDto.getStartDate().toEpochDay())
+                                + 1;
+
+                if (leaveBalance.getRemainingDays() < totalDays) {
+                        throw new IllegalArgumentException("Insufficient leave balance");
+                }
+
+                leaveBalance.setRemainingDays(leaveBalance.getRemainingDays() - totalDays);
+                leaveBalanceRepository.save(leaveBalance);
+
+                LeaveRequest leaveRequest = LeaveRequest.builder()
+                                .requestor(requestor)
+                                .title(requestDto.getTitle())
+                                .reason(requestDto.getReason())
+                                .startDate(requestDto.getStartDate())
+                                .endDate(requestDto.getEndDate())
+                                .leaveType(requestDto.getLeaveType())
+                                .status(Status.PENDING)
+                                .totalDays(totalDays)
+                                .createdAt(LocalDateTime.now())
+                                .updatedAt(LocalDateTime.now())
+                                .build();
+
+                LeaveRequest saved = leaveRequestRepository.save(leaveRequest);
+                messagingTemplate.convertAndSend("/topic/leave-requests", saved);
+
+                return saved;
         }
-        User requestor = userOpt.get();
 
-        request.setRequestor(requestor);
-        request.setStatus(Status.PENDING);
-        request.setCreatedAt(LocalDateTime.now());
-        request.setUpdatedAt(LocalDateTime.now());
+        public Page<LeaveRequestResponse> getAllRequests(
+                        String keyword, Status status, LeaveType leaveType, int page, int limit, String sortBy,
+                        String sortType) {
 
-        LeaveRequest leaveRequest = leaveRequestRepository.save(request);
-        messagingTemplate.convertAndSend("/topic/leave-requests", leaveRequest);
-        return leaveRequest;
-    }
+                Sort sort = sortType.equalsIgnoreCase("desc")
+                                ? Sort.by(sortBy).descending()
+                                : Sort.by(sortBy).ascending();
 
-    public List<LeaveRequestResponse> getAllRequests() {
-        List<LeaveRequest> list = leaveRequestRepository.findAll();
-        return list.stream()
-                .map(LeaveRequestResponse::new)
-                .toList();
-    }
+                Pageable pageable = PageRequest.of(page - 1, limit, sort);
+                Page<LeaveRequest> leavePage = leaveRequestRepository.searchRequests(keyword, status, leaveType,
+                                pageable);
 
+                return leavePage.map(LeaveRequestResponse::mapToResponse);
+        }
 
-    public LeaveRequest updateStatus(Long id, Status status) {
-        LeaveRequest req = leaveRequestRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Leave request not found"));
-        req.setStatus(status);
-        req.setUpdatedAt(LocalDateTime.now());
-        return leaveRequestRepository.save(req);
-    }
+        public LeaveRequest updateStatus(Long id, Status status) {
+                LeaveRequest req = leaveRequestRepository.findById(id)
+                                .orElseThrow(() -> new IllegalArgumentException("Leave request not found"));
+                req.setStatus(status);
+                req.setUpdatedAt(LocalDateTime.now());
+                return leaveRequestRepository.save(req);
+        }
 }

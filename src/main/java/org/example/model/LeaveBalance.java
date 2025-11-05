@@ -25,5 +25,4 @@ public class LeaveBalance {
     @Column(name = "remaining_days", nullable = false)
     private Integer remainingDays;
 
-    // Getters & Setters
 }
