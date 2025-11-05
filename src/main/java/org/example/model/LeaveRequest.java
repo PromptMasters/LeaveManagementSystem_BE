@@ -1,0 +1,50 @@
+package org.example.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+@Entity
+@Builder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "leave_requests")
+public class LeaveRequest {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "requestor_id", nullable = false)
+    private User requestor;
+
+    @Column(name = "start_date", nullable = false)
+    private LocalDate startDate;
+
+    @Column(name = "end_date", nullable = false)
+    private LocalDate endDate;
+
+    @Column(columnDefinition = "TEXT")
+    private String reason;
+
+    @Column(length = 255)
+    private String title;
+
+    @Column(name = "total_days", nullable = false)
+    private Integer totalDays;
+
+    @Column(nullable = false, length = 20)
+    private String status;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    // Getters & Setters
+}
