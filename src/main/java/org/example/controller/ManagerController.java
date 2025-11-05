@@ -15,13 +15,13 @@ public class ManagerController {
 
     private final ManagerService managerService;
 
-    @GetMapping("/leave-request")
-    public ResponseEntity<List<LeaveRequest>> getAllLeaveRequest(@PathVariable UUID id) {
-        BookingResponse booking = bookingService.getBookingById(id);
-        return ResponseEntity.ok(booking);
+    @GetMapping("/leave-request/{id}")
+    public ResponseEntity<List<LeaveRequest>> getAllLeaveRequests(@PathVariable UUID id) {
+        List<LeaveRequest> allLeaveRequests = managerService.getAllLeaveRequests();
+        return ResponseEntity.ok(allLeaveRequests);
     }
 
-    @PostMapping("/leave-request")
+    @PostMapping("/leave-request/{id}")
     public ResponseEntity<LeaveRequestResponse> createLeaveRequest(@PathVariable UUID userId) {
         LeaveRequestResponse leaveRequest = employeeService.createLeaveRequest(userId);
         return ResponseEntity.ok(leaveRequest);
