@@ -2,6 +2,7 @@ package org.example.controller;
 
 import org.example.Enum.Status;
 import org.example.model.LeaveRequest;
+import org.example.model.LeaveRequestResponse;
 import org.example.service.LeaveRequestService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ public class LeaveRequestController {
 
     // GET /leave-request
     @GetMapping
-    public ResponseEntity<List<LeaveRequest>> getAllLeaveRequests() {
+    public ResponseEntity<List<LeaveRequestResponse>> getAllLeaveRequests() {
         return ResponseEntity.ok(leaveRequestService.getAllRequests());
     }
 

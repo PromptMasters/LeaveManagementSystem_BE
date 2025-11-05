@@ -1,6 +1,7 @@
 package org.example.service;
 
 import org.example.model.LeaveRequest;
+import org.example.model.LeaveRequestResponse;
 import org.example.model.User;
 import org.example.repository.LeaveRequestRepository;
 import org.example.repository.UserRepository;
@@ -43,9 +44,13 @@ public class LeaveRequestService {
         return leaveRequest;
     }
 
-    public List<LeaveRequest> getAllRequests() {
-        return leaveRequestRepository.findAll();
+    public List<LeaveRequestResponse> getAllRequests() {
+        List<LeaveRequest> list = leaveRequestRepository.findAll();
+        return list.stream()
+                .map(LeaveRequestResponse::new)
+                .toList();
     }
+
 
     public LeaveRequest updateStatus(Long id, Status status) {
         LeaveRequest req = leaveRequestRepository.findById(id)
