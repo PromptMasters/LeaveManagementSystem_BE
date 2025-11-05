@@ -18,4 +18,12 @@ public class LeaveBalanceService {
     public Optional<LeaveBalance> getByUserId(Long userId) {
         return leaveBalanceRepository.findByUser_Id(userId);
     }
+
+    public void incrementAllRemainingDays() {
+        var allBalances = leaveBalanceRepository.findAll();
+        for (LeaveBalance balance : allBalances) {
+            balance.setRemainingDays(balance.getRemainingDays() + 12);
+        }
+        leaveBalanceRepository.saveAll(allBalances);
+    }
 }
