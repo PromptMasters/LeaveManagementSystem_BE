@@ -13,13 +13,40 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public interface LeaveRequestService {
+public class LeaveRequestService {
 
-    public LeaveRequestService(LeaveRequestRepository leaveRequestRepository, UserRepository userRepository);
+    private final LeaveRequestRepository leaveRequestRepository;
+    private final UserRepository userRepository;
 
-    public LeaveRequest createLeaveRequest(Long requestorId, LeaveRequest request);
+    public LeaveRequestService(LeaveRequestRepository leaveRequestRepository, UserRepository userRepository) {
+        this.leaveRequestRepository = leaveRequestRepository;
+        this.userRepository = userRepository;
+    }
 
-    public List<LeaveRequest> getAllRequests();
+    public LeaveRequest createLeaveRequest(Long requestorId, LeaveRequest request) {
+        Optional<User> userOpt = userRepository.findById(requestorId);
+        if (userOpt.isEmpty()) {
+            throw new IllegalArgumentException("User not found");
+        }
+        User requestor = userOpt.get();
 
-    public LeaveRequest updateStatus(Long id, String status);
+        request.setRequestor(requestor);
+        request.setStatus("PENDING");
+        request.setCreatedAt(LocalDateTime.now());
+        request.setUpdatedAt(LocalDateTime.now());
+
+        return leaveRequestRepository.save(request);
+    }
+
+    public List<LeaveRequest> getAllRequests() {
+        return leaveRequestRepository.findAll();
+    }
+
+    public LeaveRequest updateStatus(Long id, String status) {
+        LeaveRequest req = leaveRequestRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Leave request not found"));
+        req.setStatus(status.toUpperCase());
+        req.setUpdatedAt(LocalDateTime.now());
+        return leaveRequestRepository.save(req);
+    }
 }
