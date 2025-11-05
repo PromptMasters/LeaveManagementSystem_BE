@@ -12,7 +12,6 @@ import org.example.dto.request.UpdateStatusRequest;
 import org.example.dto.response.ApiResponses;
 import org.example.dto.response.LeaveRequestResponse;
 import org.example.dto.response.PagingResponse;
-import org.example.model.LeaveRequest;
 import org.example.service.LeaveRequestService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
