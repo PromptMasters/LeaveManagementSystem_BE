@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import org.example.Enum.Status;
 import org.example.model.LeaveRequest;
 import org.example.service.LeaveRequestService;
 import org.springframework.http.ResponseEntity;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/leave-request")
 public class LeaveRequestController {
@@ -34,8 +36,8 @@ public class LeaveRequestController {
     @PostMapping("/{id}/status")
     public ResponseEntity<LeaveRequest> updateStatus(
             @PathVariable Long id,
-            @RequestParam String status) {
-        LeaveRequest updated = leaveRequestService.updateStatus(id, status);
+            @RequestParam Status status) {
+        LeaveRequest updated = leaveRequestService.updateStatus(id,status);
         return ResponseEntity.ok(updated);
     }
 }

@@ -3,7 +3,10 @@ package org.example.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.Enum.LeaveType;
+import org.example.Enum.Status;
 
+import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -39,8 +42,13 @@ public class LeaveRequest {
     @Column(name = "total_days", nullable = false)
     private Integer totalDays;
 
-    @Column(nullable = false, length = 20)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private Status status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "leave_type",nullable = false)
+    private LeaveType leaveType;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
