@@ -7,15 +7,8 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class LeaveBalanceService {
+public interface LeaveBalanceService {
+    public LeaveBalanceService(LeaveBalanceRepository leaveBalanceRepository);
 
-    private final LeaveBalanceRepository leaveBalanceRepository;
-
-    public LeaveBalanceService(LeaveBalanceRepository leaveBalanceRepository) {
-        this.leaveBalanceRepository = leaveBalanceRepository;
-    }
-
-    public Optional<LeaveBalance> getByUserId(Long userId) {
-        return leaveBalanceRepository.findByUser_Id(userId);
-    }
+    public Optional<LeaveBalance> getByUserId(Long userId);
 }
