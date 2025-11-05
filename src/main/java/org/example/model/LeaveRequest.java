@@ -1,5 +1,6 @@
 package org.example.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,6 +21,7 @@ public class LeaveRequest {
 
     @ManyToOne
     @JoinColumn(name = "requestor_id", nullable = false)
+    @JsonBackReference
     private User requestor;
 
     @Column(name = "start_date", nullable = false)
