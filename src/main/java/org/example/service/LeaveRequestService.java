@@ -17,6 +17,7 @@ import org.example.dto.request.LeaveRequestRequest;
 import org.springframework.data.domain.*;
 import java.util.List;
 import org.example.dto.request.UpdateStatusRequest;
+import java.time.temporal.ChronoUnit;
 
 import java.time.LocalDateTime;
 
@@ -38,8 +39,11 @@ public class LeaveRequestService {
                 LeaveBalance leaveBalance = leaveBalanceRepository.findByUser_Id(requestorId)
                                 .orElseThrow(() -> new IllegalArgumentException("Leave balance not found for user"));
 
-                int totalDays = (int) (requestDto.getEndDate().toEpochDay() - requestDto.getStartDate().toEpochDay())
-                                + 1;
+                int totalDays = (int) (ChronoUnit.DAYS.between(requestDto.getStartDate(), requestDto.getEndDate()) + 1);
+
+                if (totalDays <= 0) {
+                        throw new IllegalArgumentException("End date must be after or equal to start date");
+                }
 
                 if (leaveBalance.getRemainingDays() < totalDays) {
                         throw new IllegalArgumentException("Insufficient leave balance");
