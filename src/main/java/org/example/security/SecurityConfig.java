@@ -27,21 +27,21 @@ public class SecurityConfig {
 
                 // REST API không dùng session -> stateless
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                //
-                // .authorizeHttpRequests(auth -> auth
-                // // Public routes (login, register, static resources, etc.)
-                // .requestMatchers(
-                // "/api/auth/**",
-                // "/v3/api-docs/**",
-                // "/swagger-ui/**",
-                // "/swagger-ui.html").permitAll()
-                // .anyRequest().authenticated()
-                // )
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll());
 
-        // .addFilterBefore(jwtAuthenticationFilter,
-        // org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
+                .authorizeHttpRequests(auth -> auth
+                 // Public routes (login, register, static resources, etc.)
+                 .requestMatchers(
+                 "/api/auth/**",
+                 "/v3/api-docs/**",
+                 "/swagger-ui/**",
+                 "/swagger-ui.html").permitAll()
+                 .anyRequest().authenticated()
+                 )
+//                .authorizeHttpRequests(auth -> auth
+//                        .anyRequest().permitAll());
+
+         .addFilterBefore(jwtAuthenticationFilter,
+         org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -15,6 +15,7 @@ import org.example.dto.response.PagingResponse;
 import org.example.service.LeaveRequestService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,6 +32,7 @@ public class LeaveRequestController {
         @Operation(summary = "Create a new leave request", description = "Create leave request for a specific employee (by requestorId)")
         @ApiResponse(responseCode = "200", description = "Leave request created successfully")
         @PostMapping
+        @PreAuthorize("hasRole('ADMIN')")
         public ResponseEntity<String> createLeaveRequest(
                         @Parameter(description = "ID of the user creating the leave request") @RequestParam Long requestorId,
                         @RequestBody LeaveRequestRequest requestDto) {
@@ -43,6 +45,7 @@ public class LeaveRequestController {
         @Operation(summary = "Search & filter leave requests", description = "Search by keyword, status, or leave type with pagination")
         @ApiResponse(responseCode = "200", description = "Leave requests fetched successfully")
         @GetMapping
+        @PreAuthorize("hasRole('ADMIN')")
         public ResponseEntity<ApiResponses<?>> getAllLeaveRequests(
                         @Parameter(description = "Search keyword (username or department)") @RequestParam(required = false) String keyword,
                         @Parameter(description = "Filter by status") @RequestParam(required = false) Status status,
@@ -73,6 +76,7 @@ public class LeaveRequestController {
         @Operation(summary = "Update leave request status", description = "Update status of a leave request (e.g., APPROVED / REJECTED)")
         @ApiResponse(responseCode = "200", description = "Status updated successfully")
         @PatchMapping("/{id}/status")
+        @PreAuthorize("hasRole('ADMIN')")
         public ResponseEntity<String> updateStatus(
                         @Parameter(description = "Leave request ID") @PathVariable Long id,
                         @RequestBody UpdateStatusRequest request) {
@@ -82,6 +86,7 @@ public class LeaveRequestController {
         }
 
         @GetMapping("/user/{userId}")
+        @PreAuthorize("hasRole('EMPLOYEE')")
         public List<LeaveRequestResponse> getRequestsByUser(
                         @Parameter(description = "ID of the user (employee)") @PathVariable Long userId) {
                 return leaveRequestService.getRequestsByUser(userId);
