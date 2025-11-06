@@ -15,6 +15,7 @@ import org.example.Enum.LeaveType;
 import org.example.dto.response.LeaveRequestResponse;
 import org.example.dto.request.LeaveRequestRequest;
 import org.springframework.data.domain.*;
+import java.util.List;
 
 import java.time.LocalDateTime;
 
@@ -86,5 +87,10 @@ public class LeaveRequestService {
                 req.setStatus(status);
                 req.setUpdatedAt(LocalDateTime.now());
                 return leaveRequestRepository.save(req);
+        }
+
+        public List<LeaveRequestResponse> getRequestsByUser(Long userId) {
+                List<LeaveRequest> list = leaveRequestRepository.findByRequestor_Id(userId);
+                return list.stream().map(LeaveRequestResponse::mapToResponse).toList();
         }
 }

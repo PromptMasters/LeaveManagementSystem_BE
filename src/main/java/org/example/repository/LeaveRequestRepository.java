@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long> {
     @Query("""
                 SELECT lr FROM LeaveRequest lr
@@ -25,4 +27,5 @@ public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long
             @Param("leaveType") LeaveType leaveType,
             Pageable pageable);
 
+    List<LeaveRequest> findByRequestor_Id(Long requestorId);
 }

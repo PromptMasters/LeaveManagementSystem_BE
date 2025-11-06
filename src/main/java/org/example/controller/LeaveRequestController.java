@@ -12,11 +12,12 @@ import org.example.dto.request.UpdateStatusRequest;
 import org.example.dto.response.ApiResponses;
 import org.example.dto.response.LeaveRequestResponse;
 import org.example.dto.response.PagingResponse;
-import org.example.model.LeaveRequest;
 import org.example.service.LeaveRequestService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @CrossOrigin("*")
 @RestController
@@ -78,5 +79,11 @@ public class LeaveRequestController {
 
                 leaveRequestService.updateStatus(id, request.getStatus());
                 return ResponseEntity.ok("Leave request update status successfully!");
+        }
+
+        @GetMapping("/user/{userId}")
+        public List<LeaveRequestResponse> getRequestsByUser(
+                        @Parameter(description = "ID of the user (employee)") @PathVariable Long userId) {
+                return leaveRequestService.getRequestsByUser(userId);
         }
 }
