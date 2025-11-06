@@ -44,6 +44,18 @@ public class LeaveRequestService {
                         throw new IllegalArgumentException("Insufficient leave balance");
                 }
 
+                // Check overlap
+                boolean hasOverlap = leaveRequestRepository.existsByRequestor_IdAndStatusInAndDateOverlap(
+                                requestorId,
+                                List.of(Status.PENDING, Status.APPROVED),
+                                requestDto.getStartDate(),
+                                requestDto.getEndDate());
+
+                if (hasOverlap) {
+                        throw new IllegalArgumentException(
+                                        "You already have a leave request overlapping this date range!");
+                }
+
                 leaveBalance.setRemainingDays(leaveBalance.getRemainingDays() - totalDays);
                 leaveBalanceRepository.save(leaveBalance);
 

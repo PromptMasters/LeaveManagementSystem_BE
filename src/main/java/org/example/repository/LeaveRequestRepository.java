@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long> {
@@ -28,4 +29,20 @@ public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long
             Pageable pageable);
 
     List<LeaveRequest> findByRequestor_Id(Long requestorId);
+
+    @Query("""
+                SELECT CASE WHEN COUNT(lr) > 0 THEN true ELSE false END
+                FROM LeaveRequest lr
+                WHERE lr.requestor.id = :userId
+                  AND lr.status IN :statuses
+                  AND (
+                      (lr.startDate <= :endDate AND lr.endDate >= :startDate)
+                  )
+            """)
+    boolean existsByRequestor_IdAndStatusInAndDateOverlap(
+            @Param("userId") Long userId,
+            @Param("statuses") List<Status> statuses,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
+
 }
