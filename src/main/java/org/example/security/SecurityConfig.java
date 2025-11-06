@@ -12,6 +12,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import java.util.List;
 
@@ -23,11 +25,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                // ✅ Bật full CORS, cho phép cả preflight OPTIONS
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("*")); // hoặc http://localhost:8086 nếu muốn cụ thể
+                    config.setAllowedOrigins(List.of("*"));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-                    config.setAllowedHeaders(List.of("*"));
+                    config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
+                    config.setExposedHeaders(List.of("Authorization"));
                     config.setAllowCredentials(false);
                     return config;
                 }))
@@ -46,6 +50,19 @@ public class SecurityConfig {
                 .logout(logout -> logout.permitAll());
 
         return http.build();
+    }
+
+    // ⚙️ Cho chắc chắn, thêm CorsFilter riêng xử lý OPTIONS
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
+        config.setAllowCredentials(false);
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
     }
 
     @Bean
