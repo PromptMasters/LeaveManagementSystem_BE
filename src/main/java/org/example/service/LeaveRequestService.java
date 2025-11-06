@@ -73,7 +73,11 @@ public class LeaveRequestService {
                                 .build();
 
                 LeaveRequest saved = leaveRequestRepository.save(leaveRequest);
-                messagingTemplate.convertAndSend("/topic/leave-requests", saved);
+                Long managerId = requestor.getManager().getId();
+
+                // Gửi riêng tới topic của manager đó
+                messagingTemplate.convertAndSend("/topic/manager/" + managerId,
+                                LeaveRequestResponse.mapToResponse(saved));
 
                 return saved;
         }
