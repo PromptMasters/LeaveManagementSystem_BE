@@ -8,4 +8,5 @@ import org.example.Enum.Status;
 @Setter
 public class UpdateStatusRequest {
     private Status status;
+    private String rejectedReason;
 }

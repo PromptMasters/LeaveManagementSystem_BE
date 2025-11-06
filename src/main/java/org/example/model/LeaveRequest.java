@@ -35,6 +35,9 @@ public class LeaveRequest {
     @Column(columnDefinition = "TEXT")
     private String reason;
 
+    @Column(columnDefinition = "TEXT")
+    private String rejectedReason;
+
     @Column(length = 255)
     private String title;
 

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.Enum.Role;
 
 import java.util.List;
 
@@ -24,11 +25,15 @@ public class User {
     @Column(nullable = false, length = 100)
     private String username;
 
+    @Column(nullable = false, length = 50)
+    private String fullname;
+
     @Column(nullable = false, length = 255)
     private String password;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
-    private String role;
+    private Role role;
 
     @ManyToOne
     @JoinColumn(name = "manager_id")

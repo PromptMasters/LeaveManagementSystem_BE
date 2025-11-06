@@ -28,7 +28,7 @@ public class LeaveRequestResponse {
     public static LeaveRequestResponse mapToResponse(LeaveRequest lr) {
         return LeaveRequestResponse.builder()
                 .leaveRequestId(lr.getId())
-                .requestorName(lr.getRequestor() != null ? lr.getRequestor().getUsername() : null)
+                .requestorName(lr.getRequestor() != null ? lr.getRequestor().getFullname() : null)
                 .departmentName(lr.getRequestor() != null ? lr.getRequestor().getDepartment() : null)
                 .startDate(lr.getStartDate())
                 .endDate(lr.getEndDate())

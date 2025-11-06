@@ -16,6 +16,7 @@ import org.example.dto.response.LeaveRequestResponse;
 import org.example.dto.request.LeaveRequestRequest;
 import org.springframework.data.domain.*;
 import java.util.List;
+import org.example.dto.request.UpdateStatusRequest;
 
 import java.time.LocalDateTime;
 
@@ -97,10 +98,11 @@ public class LeaveRequestService {
                 return leavePage.map(LeaveRequestResponse::mapToResponse);
         }
 
-        public LeaveRequest updateStatus(Long id, Status status) {
+        public LeaveRequest updateStatus(Long id, UpdateStatusRequest request) {
                 LeaveRequest req = leaveRequestRepository.findById(id)
                                 .orElseThrow(() -> new IllegalArgumentException("Leave request not found"));
-                req.setStatus(status);
+                req.setStatus(request.getStatus());
+                req.setRejectedReason(request.getRejectedReason());
                 req.setUpdatedAt(LocalDateTime.now());
                 return leaveRequestRepository.save(req);
         }
